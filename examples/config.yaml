@@ -1,0 +1,23 @@
+defectdojo:
+  page_size: 100
+  request_timeout_seconds: 30
+  verify_tls: true
+classification:
+  sca_scan_types: [Trivy Scan, Semgrep JSON Report, OSV Scanner, Generic Findings Import]
+  secret_scan_types: [Gitleaks Scan, TruffleHog Scan, Secret Detection Report]
+  sca_title_patterns:
+    - "(?i)CVE-\\d{4}-\\d+"
+    - "(?i)GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}"
+    - "(?i)OSV-\\d+"
+  sca_description_patterns: ["(?i)vulnerable package", "(?i)dependency", "(?i)fixed version", "(?i)installed version"]
+  secret_title_patterns: ["(?i)secret", "(?i)api key", "(?i)token", "(?i)password", "(?i)credential", "(?i)private key"]
+tags:
+  auto_verified_sca: auto-verified-sca
+  auto_verified_secret: auto-verified-secret
+  auto_fp_secret: auto-fp-secret
+  manual_triage_required: manual-triage-required
+safety:
+  do_not_override_manual_false_positive: true
+  do_not_override_risk_accepted: true
+  do_not_reopen_inactive_findings: true
+  add_audit_note: true
