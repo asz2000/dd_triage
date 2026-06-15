@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dd-triage-bot"
+version = "0.1.0"
+description = "DefectDojo post-import triage automation for SCA and secret findings"
+requires-python = ">=3.12"
+dependencies = ["httpx", "pydantic", "typer", "pyyaml", "rich", "tenacity"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
