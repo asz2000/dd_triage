@@ -11,7 +11,7 @@ from .models import Finding
 
 @dataclass
 class MatchCriteria:
-    condition:str='AND'; path_regex:list[str]=field(default_factory=list); line_regex:list[str]=field(default_factory=list); secret_regex:list[str]=field(default_factory=list)
+    condition:str='AND'; path_regex:list[str]=field(default_factory=list); line_regex:list[str]=field(default_factory=list); secret_regex:list[str]=field(default_factory=list); title_regex:list[str]=field(default_factory=list)
 @dataclass
 class ExceptionRule:
     id:str; enabled:bool=True; provider:str='generic'; scanner_rule_ids:list[str]=field(default_factory=list); decision:str='false_positive'; reason:str=''; owner:str=''; created_at:date|str|None=None; expires_at:date|str|None=None; match:MatchCriteria|dict=field(default_factory=MatchCriteria); tags:list[str]=field(default_factory=list)
@@ -33,7 +33,7 @@ def load_exception_policy(path: str|Path)->ExceptionPolicy:
     return ExceptionPolicy(**(yaml.safe_load(Path(path).read_text(encoding='utf-8')) or {}))
 def _matches_any(patterns:list[str], value:str)->bool: return any(re.search(p,value or '') for p in patterns)
 def find_matching_exception(f:Finding, policy:ExceptionPolicy, today:date|None=None)->ExceptionRule|None:
-    rid=str(f.get('scanner_rule_id','rule_id',default='')); path=str(f.get('file_path','file','path',default='')); line=str(f.get('line','line_text','matched_line',default='')); secret=str(f.get('secret','secret_value','matched_secret','raw_secret',default=''))
+    rid=str(f.get('scanner_rule_id','rule_id',default='')); path=str(f.get('file_path','file','path',default='')); line=str(f.get('line','line_text','matched_line',default='')); secret=str(f.get('secret','secret_value','matched_secret','raw_secret',default='')); title=str(f.get('title', default=''))
     for r in policy.rules:
         if not r.enabled or r.expired(today) or r.decision!='false_positive': continue
         if r.scanner_rule_ids and rid not in r.scanner_rule_ids: continue
@@ -41,5 +41,6 @@ def find_matching_exception(f:Finding, policy:ExceptionPolicy, today:date|None=N
         if r.match.path_regex: groups.append(_matches_any(r.match.path_regex,path))
         if r.match.line_regex: groups.append(_matches_any(r.match.line_regex,line))
         if r.match.secret_regex: groups.append(_matches_any(r.match.secret_regex,secret))
+        if r.match.title_regex: groups.append(_matches_any(r.match.title_regex,title))
         if groups and ((r.match.condition.upper()=='OR' and any(groups)) or (r.match.condition.upper()!='OR' and all(groups))): return r
     return None
