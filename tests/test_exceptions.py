@@ -18,3 +18,7 @@ def test_and_requires_all_groups():
 def test_or_requires_one_group():
     p=ExceptionPolicy(rules=[rule(match=MatchCriteria(condition='OR', path_regex=['docs/'], secret_regex=['dummy']))])
     assert find_matching_exception(finding(scanner_rule_id='generic-api-key', file_path='src/a', secret='dummy'),p).id=='r1'
+
+def test_title_regex_exception_matches_finding_title():
+    p=ExceptionPolicy(rules=[ExceptionRule(id='title-rule', match=MatchCriteria(title_regex=['SonarCloud']))])
+    assert find_matching_exception(Finding(1, title='Leaked SonarCloud token'), p).id == 'title-rule'

@@ -16,7 +16,7 @@ def cmd_triage(args):
     if args.dry_run == args.apply: raise SystemExit('Choose exactly one of --dry-run or --apply')
     cfg=load_config(args.config); policy=load_exception_policy(args.exceptions); client=_client(cfg); audit=AuditLogger(args.audit_log); total=0
     for raw in client.iter_findings(args.product_id):
-        total+=1; a=desired_change(Finding.from_api(raw,args.product_id),cfg,policy); apply_action(a,client,audit,args.product_id,args.dry_run); print(f'{a.finding.id}: {a.action}')
+        total+=1; a=desired_change(Finding.from_api(raw,args.product_id),cfg,policy); apply_action(a,client,audit,args.product_id,args.dry_run); print(f'{a.finding.id}: {a.action}' + (f' | {a.finding.title}' if args.dry_run else ''))
     print(f"Processed {total} findings; mode={'dry-run' if args.dry_run else 'apply'}")
 
 def cmd_export(args):

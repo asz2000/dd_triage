@@ -43,7 +43,7 @@ def apply_action(a: TriageAction, client: Any, audit: AuditLogger, product_id: i
     if a.tags_to_add: payload["tags"] = new_tags
     old_state = {k: getattr(a.finding, k) for k in STATE}
     new_state = {**old_state, **a.patch}
-    audit.write({"finding_id": a.finding.id, "product_id": product_id or a.finding.product_id, "action": a.action, "old_state": old_state, "new_state": new_state, "rule_id": a.rule_id, "reason": a.reason, "masked_secret": a.masked_secret, "dry_run": dry_run})
+    audit.write({"finding_id": a.finding.id, "finding_title": a.finding.title, "product_id": product_id or a.finding.product_id, "action": a.action, "old_state": old_state, "new_state": new_state, "rule_id": a.rule_id, "reason": a.reason, "masked_secret": a.masked_secret, "dry_run": dry_run})
     if not dry_run:
         client.patch_finding(a.finding.id, payload)
         if a.note:
